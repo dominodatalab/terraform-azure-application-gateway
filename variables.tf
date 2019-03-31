@@ -32,6 +32,11 @@ variable "disabled_ssl_protocols" {
   default     = ["TLSv1_0", "TLSv1_1"]
 }
 
+variable "targets" {
+  description = ""
+  default     = []
+}
+
 # sku settings
 variable "sku_name" {
   description = ""

@@ -77,8 +77,17 @@ resource "azurerm_application_gateway" "this" {
   tags = "${var.tags}"
 }
 
-# resource "azurerm_network_interface_application_gateway_backend_address_pool_association" "this" {
-#   network_interface_id    = ""
-#   ip_configuration_name   = ""
-#   backend_address_pool_id = "${azurerm_application_gateway.this.backend_address_pool.0.id}"
-# }
+data "azurerm_network_interface" "targets" {
+  count = "${length(var.targets)}"
+
+  name                = "${var.targets[count.index]}"
+  resource_group_name = "${var.resource_group_name}"
+}
+
+resource "azurerm_network_interface_application_gateway_backend_address_pool_association" "this" {
+  count = "${length(var.targets)}"
+
+  network_interface_id    = "${element(data.azurerm_network_interface.targets.*.id, count.index)}"
+  ip_configuration_name   = "${element(data.azurerm_network_interface.targets.*.ip_configuration.0.name, count.index)}"
+  backend_address_pool_id = "${azurerm_application_gateway.this.backend_address_pool.0.id}"
+}
