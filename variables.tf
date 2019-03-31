@@ -2,13 +2,24 @@ variable "resource_group_name" {
   description = ""
 }
 
+variable "location" {
+  description = ""
+}
+
 variable "subnet_id" {
   description = ""
 }
 
-variable "external_facing" {
+# optional
+
+variable "name" {
   description = ""
-  default     = false
+  default     = ""
+}
+
+variable "enable_public_endpoint" {
+  description = ""
+  default     = true
 }
 
 variable "enable_http2" {

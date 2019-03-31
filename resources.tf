@@ -1,25 +1,19 @@
-locals {
-  frontend_ip_configuration_name = "fe-ipconfig"
-  frontend_port_name             = "http"
-  http_listener_name             = "http-listener"
+resource "azurerm_public_ip" "this" {
+  count = "${var.enable_public_endpoint ? 1 : 0}"
 
-  backend_address_pool_name  = "pool-name"
-  backend_http_settings_name = "http-settings"
+  name                = "${local.gateway_name}-vip"
+  resource_group_name = "${var.resource_group_name}"
+  location            = "${var.location}"
+  sku                 = "Basic"
+  allocation_method   = "Dynamic"
+
+  tags = "${var.tags}"
 }
-
-data "azurerm_resource_group" "rg" { # TODO: uncouple location and rg?
-  name = "${var.resource_group_name}"
-}
-
-# TODO: create VIP when creating public appgw
-
-resource "random_uuid" "this" {}
 
 resource "azurerm_application_gateway" "this" {
-  name                = "appgw-${random_uuid.this.result}"
-  resource_group_name = "${data.azurerm_resource_group.rg.name}"
-  location            = "${data.azurerm_resource_group.rg.location}"
-
+  name                   = "${local.gateway_name}"
+  resource_group_name    = "${var.resource_group_name}"
+  location               = "${var.location}"
   enable_http2           = "${var.enable_http2}"
   disabled_ssl_protocols = ["${var.disabled_ssl_protocols}"]
 
@@ -43,7 +37,8 @@ resource "azurerm_application_gateway" "this" {
   #   gw is public or private
   frontend_ip_configuration {
     name                          = "${local.frontend_ip_configuration_name}"
-    subnet_id                     = "${var.subnet_id}"
+    subnet_id                     = "${var.enable_public_endpoint ? "" : var.subnet_id}"
+    public_ip_address_id          = "${azurerm_public_ip.this.id}"
     private_ip_address_allocation = "Dynamic"
   }
 
@@ -64,7 +59,6 @@ resource "azurerm_application_gateway" "this" {
     port                  = 80
     protocol              = "Http"
     request_timeout       = "${var.backend_request_timeout}"
-    # probe_name = ""
 
     connection_draining {
       enabled           = "${var.enable_connection_draining}"
