@@ -2,16 +2,20 @@
 # REQUIRED
 #------------------------------------------------------------------------------
 
-variable "resource_group_name" {
-  description = "Resource group that will contain the gateway"
-}
-
 variable "location" {
   description = "Azure Region where the gateway will be created"
 }
 
+variable "resource_group_name" {
+  description = "Resource group that will contain the gateway"
+}
+
 variable "subnet_id" {
   description = "Subnet where the gateway will create its NIC"
+}
+
+variable "object_id" {
+  description = "Object ID of a user, service principal or security group in the Azure Active Directory tenant for the key vault"
 }
 
 #------------------------------------------------------------------------------
@@ -26,11 +30,6 @@ variable "name" {
 variable "targets" {
   description = "List of NIC IDs targeted by the application gateway's backend pool"
   default     = []
-}
-
-variable "enable_public_endpoint" {
-  description = "Create a public IP and attach it to the application gateway, otherwise an internal gateway will be created"
-  default     = true
 }
 
 variable "enable_http2" {
@@ -51,22 +50,6 @@ variable "ssl_sans" {
 variable "disabled_ssl_protocols" {
   description = "List of ssl protocols which should be disabled on this application gateway"
   default     = ["TLSv1_0", "TLSv1_1"]
-}
-
-# sku settings
-variable "sku_name" {
-  description = ""
-  default     = "Standard_Medium" # "Standard_v2"
-}
-
-variable "sku_tier" {
-  description = ""
-  default     = "Standard" # "Standard_v2"
-}
-
-variable "sku_capacity" {
-  description = ""
-  default     = 2
 }
 
 variable "cookie_based_affinity" {

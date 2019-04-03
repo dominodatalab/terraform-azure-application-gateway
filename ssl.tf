@@ -12,7 +12,7 @@ resource "azurerm_key_vault" "this" {
 
   access_policy {
     tenant_id = "${data.azurerm_client_config.current.tenant_id}"
-    object_id = "eca4b34d-4bfe-46a9-b9e4-a95751cd4c1f" # TODO: where is this going to come from exactly?
+    object_id = "${var.object_id}"
 
     certificate_permissions = [
       "create",
@@ -64,7 +64,7 @@ resource "azurerm_key_vault" "this" {
 }
 
 resource "azurerm_key_vault_certificate" "this" {
-  name         = "${local.name}-cert"
+  name         = "${local.certificate_name}"
   key_vault_id = "${azurerm_key_vault.this.id}"
 
   certificate_policy {
@@ -118,6 +118,8 @@ resource "azurerm_key_vault_certificate" "this" {
 }
 
 data "azurerm_key_vault_secret" "cert" {
-  name      = "${local.name}-cert"
+  name      = "${local.certificate_name}"
   vault_uri = "${azurerm_key_vault.this.vault_uri}"
+
+  depends_on = ["azurerm_key_vault_certificate.this"]
 }

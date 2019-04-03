@@ -1,11 +1,9 @@
 resource "azurerm_public_ip" "this" {
-  count = "${var.enable_public_endpoint ? 1 : 0}"
-
   name                = "${local.name}-vip"
   resource_group_name = "${var.resource_group_name}"
   location            = "${var.location}"
-  sku                 = "Basic"
-  allocation_method   = "Dynamic"
+  sku                 = "Standard"
+  allocation_method   = "Static"
 
   tags = "${var.tags}"
 }
@@ -17,10 +15,10 @@ resource "azurerm_application_gateway" "this" {
   enable_http2           = "${var.enable_http2}"
   disabled_ssl_protocols = ["${var.disabled_ssl_protocols}"]
 
-  sku { # NOTE: this is fucking weird with v2 scale settings
-    name     = "${var.sku_name}"
-    tier     = "${var.sku_tier}"
-    capacity = "${var.sku_capacity}"
+  sku {
+    name     = "Standard_v2"
+    tier     = "Standard_v2"
+    capacity = 2
   }
 
   gateway_ip_configuration {
@@ -29,10 +27,8 @@ resource "azurerm_application_gateway" "this" {
   }
 
   frontend_ip_configuration {
-    name                          = "${local.frontend_ip_configuration_name}"
-    subnet_id                     = "${var.enable_public_endpoint ? "" : var.subnet_id}"
-    public_ip_address_id          = "${azurerm_public_ip.this.id}"
-    private_ip_address_allocation = "Dynamic"
+    name                 = "${local.frontend_ip_configuration_name}"
+    public_ip_address_id = "${azurerm_public_ip.this.id}"
   }
 
   frontend_port {
