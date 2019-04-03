@@ -1,7 +1,7 @@
 resource "azurerm_public_ip" "this" {
   count = "${var.enable_public_endpoint ? 1 : 0}"
 
-  name                = "${local.gateway_name}-vip"
+  name                = "${local.name}-vip"
   resource_group_name = "${var.resource_group_name}"
   location            = "${var.location}"
   sku                 = "Basic"
@@ -11,7 +11,7 @@ resource "azurerm_public_ip" "this" {
 }
 
 resource "azurerm_application_gateway" "this" {
-  name                   = "${local.gateway_name}"
+  name                   = "${local.name}"
   resource_group_name    = "${var.resource_group_name}"
   location               = "${var.location}"
   enable_http2           = "${var.enable_http2}"
@@ -28,13 +28,6 @@ resource "azurerm_application_gateway" "this" {
     subnet_id = "${var.subnet_id}"
   }
 
-  frontend_port {
-    name = "${local.frontend_port_name}"
-    port = 80
-  }
-
-  # NOTE: either publicIP or subnet should be specified; determines whether the
-  #   gw is public or private
   frontend_ip_configuration {
     name                          = "${local.frontend_ip_configuration_name}"
     subnet_id                     = "${var.enable_public_endpoint ? "" : var.subnet_id}"
@@ -42,10 +35,34 @@ resource "azurerm_application_gateway" "this" {
     private_ip_address_allocation = "Dynamic"
   }
 
+  frontend_port {
+    name = "${local.https_port_name}"
+    port = 443
+  }
+
+  frontend_port {
+    name = "${local.http_port_name}"
+    port = 80
+  }
+
+  ssl_certificate {
+    name     = "${local.certificate_name}"
+    data     = "${data.azurerm_key_vault_secret.cert.value}"
+    password = ""
+  }
+
+  http_listener {
+    name                           = "${local.https_listener_name}"
+    frontend_ip_configuration_name = "${local.frontend_ip_configuration_name}"
+    frontend_port_name             = "${local.https_port_name}"
+    ssl_certificate_name           = "${local.certificate_name}"
+    protocol                       = "Https"
+  }
+
   http_listener {
     name                           = "${local.http_listener_name}"
     frontend_ip_configuration_name = "${local.frontend_ip_configuration_name}"
-    frontend_port_name             = "${local.frontend_port_name}"
+    frontend_port_name             = "${local.http_port_name}"
     protocol                       = "Http"
   }
 
@@ -67,7 +84,15 @@ resource "azurerm_application_gateway" "this" {
   }
 
   request_routing_rule {
-    name                       = "dem-rulz"
+    name                       = "https-routing"
+    rule_type                  = "Basic"
+    http_listener_name         = "${local.https_listener_name}"
+    backend_address_pool_name  = "${local.backend_address_pool_name}"
+    backend_http_settings_name = "${local.backend_http_settings_name}"
+  }
+
+  request_routing_rule {
+    name                       = "http-routing"
     rule_type                  = "Basic"
     http_listener_name         = "${local.http_listener_name}"
     backend_address_pool_name  = "${local.backend_address_pool_name}"
