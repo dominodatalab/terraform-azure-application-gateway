@@ -66,12 +66,26 @@ resource "azurerm_application_gateway" "this" {
     name = "${local.backend_address_pool_name}"
   }
 
+  probe {
+    name                = "${local.health_probe_name}"
+    protocol            = "${var.health_probe_protocol}"
+    interval            = "${var.health_probe_interval}"
+    timeout             = "${var.health_probe_timeout}"
+    unhealthy_threshold = "${var.health_probe_threshold}"
+    path                = "${var.health_probe_path}"
+
+    pick_host_name_from_backend_http_settings = true
+  }
+
   backend_http_settings {
     name                  = "${local.backend_http_settings_name}"
     cookie_based_affinity = "${var.cookie_based_affinity}"
     port                  = 80
     protocol              = "Http"
     request_timeout       = "${var.backend_request_timeout}"
+    probe_name            = "${local.health_probe_name}"
+
+    pick_host_name_from_backend_address = true
 
     connection_draining {
       enabled           = "${var.enable_connection_draining}"

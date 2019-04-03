@@ -14,4 +14,5 @@ locals {
   backend_address_pool_name      = "server-pool"
   backend_http_settings_name     = "http-settings"
   certificate_name               = "self-signed-cert"
+  health_probe_name              = "healthz"
 }

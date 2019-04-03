@@ -72,6 +72,31 @@ variable "connection_drain_timeout" {
   default     = 300
 }
 
+variable "health_probe_protocol" {
+  description = "Protocol used to by health probe"
+  default     = "Http"
+}
+
+variable "health_probe_interval" {
+  description = "Interval between two consecutive probes in seconds"
+  default     = 30
+}
+
+variable "health_probe_timeout" {
+  description = "Probe is marked as failed if valid response within this timeout period in seconds"
+  default     = 30
+}
+
+variable "health_probe_threshold" {
+  description = "Indicates the amount of retries which should be attempted before a pool member is deemed unhealthy"
+  default     = 3
+}
+
+variable "health_probe_path" {
+  description = "Path used by health probe"
+  default     = "/"
+}
+
 variable "tags" {
   description = "A mapping of tags to assign to all resources"
   default     = {}
