@@ -73,8 +73,7 @@ resource "azurerm_application_gateway" "this" {
     timeout             = "${var.health_probe_timeout}"
     unhealthy_threshold = "${var.health_probe_threshold}"
     path                = "${var.health_probe_path}"
-
-    pick_host_name_from_backend_http_settings = true
+    host                = "127.0.0.1"
   }
 
   backend_http_settings {
@@ -84,8 +83,6 @@ resource "azurerm_application_gateway" "this" {
     protocol              = "Http"
     request_timeout       = "${var.backend_request_timeout}"
     probe_name            = "${local.health_probe_name}"
-
-    pick_host_name_from_backend_address = true
 
     connection_draining {
       enabled           = "${var.enable_connection_draining}"
