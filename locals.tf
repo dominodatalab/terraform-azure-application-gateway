@@ -4,7 +4,7 @@ resource "random_id" "name" {
 }
 
 locals {
-  name = "${var.name == "" ? random_id.name.hex : var.name}"
+  name = var.name == "" ? random_id.name.hex : var.name
 
   frontend_ip_configuration_name = "fe-ipconfig"
   https_port_name                = "https"

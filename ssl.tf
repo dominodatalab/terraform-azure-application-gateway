@@ -1,18 +1,19 @@
-data "azurerm_client_config" "current" {}
+data "azurerm_client_config" "current" {
+}
 
 resource "azurerm_key_vault" "this" {
-  name                = "${local.name}"
-  location            = "${var.location}"
-  resource_group_name = "${var.resource_group_name}"
-  tenant_id           = "${data.azurerm_client_config.current.tenant_id}"
+  name                = local.name
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  tenant_id           = data.azurerm_client_config.current.tenant_id
 
   sku {
     name = "standard"
   }
 
   access_policy {
-    tenant_id = "${data.azurerm_client_config.current.tenant_id}"
-    object_id = "${var.object_id}"
+    tenant_id = data.azurerm_client_config.current.tenant_id
+    object_id = var.object_id
 
     certificate_permissions = [
       "create",
@@ -60,12 +61,12 @@ resource "azurerm_key_vault" "this" {
     ]
   }
 
-  tags = "${var.tags}"
+  tags = var.tags
 }
 
 resource "azurerm_key_vault_certificate" "this" {
-  name         = "${local.certificate_name}"
-  key_vault_id = "${azurerm_key_vault.this.id}"
+  name         = local.certificate_name
+  key_vault_id = azurerm_key_vault.this.id
 
   certificate_policy {
     issuer_parameters {
@@ -106,7 +107,7 @@ resource "azurerm_key_vault_certificate" "this" {
       ]
 
       subject_alternative_names {
-        dns_names = ["${var.ssl_sans}"]
+        dns_names = var.ssl_sans
       }
 
       subject            = "CN=${var.ssl_cn}"
@@ -114,12 +115,12 @@ resource "azurerm_key_vault_certificate" "this" {
     }
   }
 
-  tags = "${var.tags}"
+  tags = var.tags
 }
 
 data "azurerm_key_vault_secret" "cert" {
-  name      = "${local.certificate_name}"
-  vault_uri = "${azurerm_key_vault.this.vault_uri}"
+  name      = local.certificate_name
+  vault_uri = azurerm_key_vault.this.vault_uri
 
-  depends_on = ["azurerm_key_vault_certificate.this"]
+  depends_on = [azurerm_key_vault_certificate.this]
 }
