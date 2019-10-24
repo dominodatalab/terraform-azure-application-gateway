@@ -120,5 +120,5 @@ data "azurerm_key_vault_secret" "cert" {
   name      = local.certificate_name
   key_vault_id = azurerm_key_vault.this.id
 
-  depends_on = [azurerm_key_vault_certificate.this]
+  #depends_on = [azurerm_key_vault_certificate.this]
 }
