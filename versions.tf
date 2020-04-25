@@ -3,7 +3,8 @@ terraform {
 }
 
 provider "azurerm" {
-  version = "~> 1.33.0"
+  version = ">=2.3.0"
+  features {}
 }
 
 provider "random" {

@@ -12,3 +12,8 @@ output "public_ip" {
   description = "The public IP of the application gateway"
   value       = azurerm_public_ip.this.ip_address
 }
+
+output "agw_ip_id" {
+  description = "The id of the AGW ip"
+  value       = azurerm_public_ip.this.id
+}

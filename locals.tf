@@ -13,6 +13,6 @@ locals {
   http_listener_name             = "http-listener"
   backend_address_pool_name      = "server-pool"
   backend_http_settings_name     = "http-settings"
-  certificate_name               = "self-signed-cert"
+  certificate_name               = "ssl-cert"
   health_probe_name              = "healthz"
 }
