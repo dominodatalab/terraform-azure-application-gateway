@@ -14,10 +14,6 @@ variable "subnet_id" {
   description = "Subnet where the gateway will create its NIC"
 }
 
-variable "object_id" {
-  description = "Object ID of a user, service principal or security group in the Azure Active Directory tenant for the key vault"
-}
-
 #------------------------------------------------------------------------------
 # OPTIONAL
 #------------------------------------------------------------------------------
