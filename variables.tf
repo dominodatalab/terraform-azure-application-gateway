@@ -40,12 +40,10 @@ variable "enable_http2" {
 
 variable "ssl_cert_pfx_data" {
   description = "Password-protected PFX format SSL cert to install into AGW"
-  default     = null
 }
 
 variable "ssl_cert_pfx_password" {
   description = "Password for PFX formatted SSL cert (required with SSL)"
-  default     = null
 }
 
 variable "disabled_ssl_protocols" {
