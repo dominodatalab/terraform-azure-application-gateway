@@ -14,10 +14,6 @@ variable "subnet_id" {
   description = "Subnet where the gateway will create its NIC"
 }
 
-variable "object_id" {
-  description = "Object ID of a user, service principal or security group in the Azure Active Directory tenant for the key vault"
-}
-
 #------------------------------------------------------------------------------
 # OPTIONAL
 #------------------------------------------------------------------------------
@@ -32,19 +28,22 @@ variable "targets" {
   default     = []
 }
 
+variable "backend_pool_ip_addresses" {
+  description = "IP Addresses in the default backend address pool"
+  default     = []
+}
+
 variable "enable_http2" {
   description = "Enable the HTTP/2 protocol"
   default     = true
 }
 
-variable "ssl_cn" {
-  description = "Common name (CN) added to the self-signed certificate subject"
-  default     = "*.dominodatalab.com"
+variable "ssl_cert_pfx_data" {
+  description = "Password-protected PFX format SSL cert to install into AGW"
 }
 
-variable "ssl_sans" {
-  description = "List of alternative DNS names identified by the self-signed certificate"
-  default     = []
+variable "ssl_cert_pfx_password" {
+  description = "Password for PFX formatted SSL cert (required with SSL)"
 }
 
 variable "disabled_ssl_protocols" {

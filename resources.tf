@@ -46,8 +46,8 @@ resource "azurerm_application_gateway" "this" {
 
   ssl_certificate {
     name     = local.certificate_name
-    data     = data.azurerm_key_vault_secret.cert.value
-    password = ""
+    data     = var.ssl_cert_pfx_data
+    password = var.ssl_cert_pfx_password
   }
 
   http_listener {
@@ -67,6 +67,7 @@ resource "azurerm_application_gateway" "this" {
 
   backend_address_pool {
     name = local.backend_address_pool_name
+    ip_addresses = var.backend_pool_ip_addresses
   }
 
   probe {
