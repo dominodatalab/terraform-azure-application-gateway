@@ -10,7 +10,7 @@ Terraform module that creates an application gateway with the following features
 
 ```hcl
 module "my_appgw" {
-  source = "git@github.com:cerebrotech/terraform-azure-application-gateway.git"
+  source = "git@github.com:dominodatalab/terraform-azure-application-gateway.git"
 
   location               = "westus2"
   resource_group_name    = "my-resource-group"
