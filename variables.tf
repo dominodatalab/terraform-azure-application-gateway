@@ -7,7 +7,7 @@ variable "location" {
 }
 
 variable "resource_group_name" {
-  description = "Resource group that will contain the gateway"
+  description = "Resource group name or id that will contain the gateway"
 }
 
 variable "subnet_id" {
@@ -25,6 +25,7 @@ variable "name" {
 
 variable "targets" {
   description = "List of NIC IDs targeted by the application gateway's backend pool"
+  type = set(string)
   default     = []
 }
 
