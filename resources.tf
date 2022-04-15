@@ -1,6 +1,6 @@
 resource "azurerm_public_ip" "this" {
   name                = "${local.name}-vip"
-  resource_group_name = var.resource_group_name
+  resource_group_name = local.resource_group_name
   location            = var.location
   sku                 = "Standard"
   allocation_method   = "Static"
@@ -10,7 +10,7 @@ resource "azurerm_public_ip" "this" {
 
 resource "azurerm_application_gateway" "this" {
   name                   = local.name
-  resource_group_name    = var.resource_group_name
+  resource_group_name    = local.resource_group_name
   location               = var.location
   enable_http2           = var.enable_http2
 
@@ -114,19 +114,16 @@ resource "azurerm_application_gateway" "this" {
 }
 
 data "azurerm_network_interface" "targets" {
-  count = length(var.targets)
+  for_each =  var.targets
 
-  name                = var.targets[count.index]
-  resource_group_name = var.resource_group_name
+  name                = each.value
+  resource_group_name = local.resource_group_name
 }
 
 resource "azurerm_network_interface_application_gateway_backend_address_pool_association" "this" {
-  count = length(var.targets)
+  for_each =  var.targets
 
-  network_interface_id = element(data.azurerm_network_interface.targets.*.id, count.index)
-  ip_configuration_name = element(
-    data.azurerm_network_interface.targets.*.ip_configuration.0.name,
-    count.index,
-  )
-  backend_address_pool_id = azurerm_application_gateway.this.backend_address_pool[0].id
+  network_interface_id = data.azurerm_network_interface.targets[each.key].id
+  ip_configuration_name = data.azurerm_network_interface.targets[each.key].ip_configuration.0.name
+  backend_address_pool_id = one(azurerm_application_gateway.this.backend_address_pool).id
 }

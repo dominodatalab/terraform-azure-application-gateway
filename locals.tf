@@ -15,4 +15,6 @@ locals {
   backend_http_settings_name     = "http-settings"
   certificate_name               = "ssl-cert"
   health_probe_name              = "healthz"
+
+  resource_group_name = reverse(split("/", var.resource_group_name))[0]
 }
