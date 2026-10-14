@@ -12,7 +12,7 @@ resource "azurerm_application_gateway" "this" {
   name                   = local.name
   resource_group_name    = local.resource_group_name
   location               = var.location
-  enable_http2           = var.enable_http2
+  http2_enabled          = var.enable_http2
 
   ssl_policy {
     disabled_protocols = var.disabled_ssl_protocols
